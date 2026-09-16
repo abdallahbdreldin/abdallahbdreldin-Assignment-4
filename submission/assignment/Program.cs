@@ -1,6 +1,6 @@
-﻿
-
-using System.Globalization;
+﻿using System.Globalization;
+using System.Text;
+using BenchmarkDotNet.Running;
 
 namespace ConsoleApp1
 {
@@ -27,6 +27,285 @@ namespace ConsoleApp1
             };
 
             int[] sessionDurations = { 180, 240, 180, 240, 180 };
+
+            int choice;
+
+            do
+            {
+                Console.WriteLine("\n========== Session Management ==========");
+                Console.WriteLine("1. Display All Sessions");
+                Console.WriteLine("2. Search for a Session");
+                Console.WriteLine("3. Sort Session Names");
+                Console.WriteLine("4. Reverse Session Names");
+                Console.WriteLine("5. Check if Session Exists");
+                Console.WriteLine("6. Find Session Based on Condition");
+                Console.WriteLine("7. Find Session Index Based on Condition");
+                Console.WriteLine("8. Copy Session Array");
+                Console.WriteLine("9. Analyse Session Durations");
+                Console.WriteLine("10. Explain ref");
+                Console.WriteLine("11. Explain out");
+                Console.WriteLine("12. Calculate Total Duration using params");
+                Console.WriteLine("13. Get Session Date Details");
+                Console.WriteLine("14. Get Date Difference");
+                Console.WriteLine("15. Detect Past/Upcoming Sessions");
+                Console.WriteLine("16. Find Next Session");
+                Console.WriteLine("17. Format Session DateTime");
+                Console.WriteLine("18. Read and Validate Date");
+                Console.WriteLine("19. Parse Integer");
+                Console.WriteLine("20. Handle Invalid Array Index");
+                Console.WriteLine("21. Validate Duration");
+                Console.WriteLine("22. Build Schedule Report using String");
+                Console.WriteLine("23. Build Schedule Report using StringBuilder");
+                Console.WriteLine("24. Run Benchmark");
+                Console.WriteLine("0. Exit");
+                Console.WriteLine("========================================");
+
+                Console.Write("Choose an option: ");
+
+                if (!int.TryParse(Console.ReadLine(), out choice))
+                {
+                    Console.WriteLine("Invalid choice. Please enter a number.");
+                    continue;
+                }
+
+                switch (choice)
+                {
+                    case 1:
+                        DisplayAllSessions(
+                            sessionNames,
+                            sessionDates,
+                            sessionDurations);
+                        break;
+
+                    case 2:
+                        Console.Write("Enter Session Name: ");
+                        string? name = Console.ReadLine();
+
+                        Console.WriteLine(
+                            FindSessionByName(
+                                sessionNames,
+                                sessionDates,
+                                sessionDurations,
+                                name));
+                        break;
+
+                    case 3:
+                        foreach (var session in SortSessionNames(sessionNames))
+                        {
+                            Console.WriteLine(session);
+                        }
+                        break;
+
+                    case 4:
+                        foreach (var session in ReverseSessionNames(sessionNames))
+                        {
+                            Console.WriteLine(session);
+                        }
+                        break;
+
+                    case 5:
+                        Console.Write("Enter Session Name: ");
+                        name = Console.ReadLine();
+
+                        Console.WriteLine(
+                            IsSessionExists(sessionNames, name));
+                        break;
+
+                    case 6:
+                        Console.WriteLine(
+                            FindSessionBasedOnCondition(
+                                sessionNames,
+                                sessionName => sessionName.StartsWith('E')));
+                        break;
+
+                    case 7:
+                        Console.WriteLine(
+                            FindSessionIndexBasedOnCondition(
+                                sessionNames,
+                                sessionName => sessionName.StartsWith('A')));
+                        break;
+
+                    case 8:
+                        foreach (var session in CopyArray(sessionNames))
+                        {
+                            Console.WriteLine(session);
+                        }
+                        break;
+
+                    case 9:
+                        var result = AnalyseSessionDurations(sessionDurations);
+
+                        Console.WriteLine(result.durationAnalysis);
+
+                        foreach (var sessionDuration in result.copiedSessionDuration)
+                        {
+                            Console.WriteLine(sessionDuration);
+                        }
+                        break;
+
+                    case 10:
+                        int x = 5;
+
+                        Console.WriteLine($"Before ref: {x}");
+                        ExplainRef(ref x);
+                        Console.WriteLine($"After ref: {x}");
+                        break;
+
+                    case 11:
+                        Console.Write("Enter Session Name: ");
+                        name = Console.ReadLine() ?? "";
+
+                        ExplainOut(
+                            sessionNames,
+                            sessionDurations,
+                            name,
+                            out int index,
+                            out int duration);
+
+                        Console.WriteLine($"Index: {index}");
+                        Console.WriteLine($"Duration: {duration}");
+                        break;
+
+                    case 12:
+                        Console.WriteLine(
+                            $"Total Duration: {CalculateTotalDurationUsingParams(sessionDurations)}");
+                        break;
+
+                    case 13:
+                        Console.Write("Enter Session Name: ");
+                        name = Console.ReadLine() ?? "";
+
+                        Console.WriteLine(
+                            GetSessionDateDetails(
+                                sessionNames,
+                                name,
+                                sessionDates,
+                                sessionDurations));
+                        break;
+
+                    case 14:
+                        Console.Write("Enter First Session Name: ");
+                        string name1 = Console.ReadLine() ?? "";
+
+                        Console.Write("Enter Second Session Name: ");
+                        string name2 = Console.ReadLine() ?? "";
+
+                        var interval = GetDateDifference(
+                            sessionNames,
+                            sessionDates,
+                            name1,
+                            name2);
+
+                        Console.WriteLine($"Days: {interval.daysInterval}");
+                        Console.WriteLine($"Hours: {interval.hoursInterval}");
+                        break;
+
+                    case 15:
+                        foreach (var session in
+                                 DetectPastOrUpcomingSession(
+                                     sessionNames,
+                                     sessionDates))
+                        {
+                            Console.WriteLine(session);
+                        }
+                        break;
+
+                    case 16:
+                        GetTheNextSession(
+                            sessionNames,
+                            sessionDates);
+                        break;
+
+                    case 17:
+                        Console.Write("Enter Session Name: ");
+                        name = Console.ReadLine() ?? "";
+
+                        FormatSessionDateTime(
+                            sessionNames,
+                            name,
+                            sessionDates);
+                        break;
+
+                    case 18:
+                        Console.WriteLine(ReadAndValidateDate());
+                        break;
+
+                    case 19:
+                        Console.Write("Enter a number: ");
+                        Console.WriteLine(
+                            ParseInt(Console.ReadLine()));
+                        break;
+
+                    case 20:
+                        Console.Write("Enter session index: ");
+
+                        if (int.TryParse(Console.ReadLine(), out int sessionIndex))
+                        {
+                            Console.WriteLine(
+                                HandleInvalidArrayIndex(
+                                    sessionNames,
+                                    sessionIndex));
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid index.");
+                        }
+                        break;
+
+                    case 21:
+                        Console.Write("Enter a valid duration: ");
+
+                        if (int.TryParse(Console.ReadLine(), out int durationInput))
+                        {
+                            try
+                            {
+                                ValidateDuration(durationInput);
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            finally
+                            {
+                                Console.WriteLine("Input operation finished.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid duration.");
+                        }
+                        break;
+
+                    case 22:
+                        Console.WriteLine(
+                            BuildSchudleReportUsingString(
+                                sessionNames,
+                                sessionDates,
+                                sessionDurations));
+                        break;
+
+                    case 23:
+                        Console.WriteLine(
+                            BuildSchudleReportUsingStringBuilder(
+                                sessionNames,
+                                sessionDates,
+                                sessionDurations));
+                        break;
+
+                    case 24:
+                        BenchmarkRunner.Run<StringConcatenationBenchmark>();
+                        break;
+
+                    case 0:
+                        Console.WriteLine("Exiting...");
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option. Please choose from the menu.");
+                        break;
+                }
+
+            } while (choice != 0);
 
             //Console.WriteLine("_______________________________________________");
             //Console.WriteLine("Part 2 — Display All Sessions");
@@ -151,9 +430,59 @@ namespace ConsoleApp1
             //Console.WriteLine("Part 14 — Read and Validate a Date");
             //Console.WriteLine("_______________________________________________\n");
 
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 15 — Exception Handling: Menu Input");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.WriteLine("please anter a number");
+            //var input = Console.ReadLine();
+            //ParseInt(input);
+            //Console.WriteLine(input);
+
             //Console.WriteLine(ReadAndValidateDate());
 
-            Console.ReadKey();
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 16 — Exception Handling: Invalid Array Index");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.WriteLine(HandleInvalidArrayIndex(sessionNames, 8));
+
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 17 & 18 — Throw an Exception - finally");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.WriteLine("Enter a Valid Duration :");
+            //if(int.TryParse(Console.ReadLine(), out int result))
+            //try
+            //{
+            //    ValidateDuration(result);
+            //}
+            //catch(ArgumentException ex)
+            //{
+            //        Console.WriteLine(ex.Message);
+            //}
+            //finally
+            //{
+            //    Console.WriteLine("Input operation finished.");
+            //}
+
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 19 — Build a Schedule Report Using string");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.WriteLine(BuildSchudleReportUsingString(sessionNames, sessionDates, sessionDurations));
+
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 20 — Build the Same Report Using StringBuilder");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.WriteLine(BuildSchudleReportUsingStringBuilder(sessionNames, sessionDates, sessionDurations));
+
+            //Console.WriteLine("_______________________________________________");
+            //Console.WriteLine("Part 22 — Benchmark Different Loop Sizes");
+            //Console.WriteLine("_______________________________________________\n");
+
+            //Console.ReadKey();
         }
 
         public static string[] DisplayAllSessions(string[] sessionNames, DateTime[] sessionDates, int[] sessionDurations)
@@ -445,6 +774,77 @@ namespace ConsoleApp1
             } while (!isSucceeded);
 
             return result.ToString();
+        }
+
+        public static int ParseInt(string? input)
+        {
+            if(input is null)
+            {
+                return -1;
+            }
+
+            while (true)
+            {
+                try
+                {
+                    return int.Parse(input);
+                }
+                catch(FormatException)
+                {
+                    Console.WriteLine("Invalid number. Please enter a valid number.");
+                    input = Console.ReadLine();
+                    if (input is null)
+                    {
+                        return -1;
+                    }
+                }
+            }
+        }
+
+        public static string HandleInvalidArrayIndex(string[] sessionNames , int index)
+        {
+            try
+            {
+                return sessionNames[index];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return "no session at this index";
+            }
+        }
+
+        public static void ValidateDuration(int duration)
+        {
+            if (duration <= 0)
+            {
+                throw new ArgumentException("Duration must be greater than zero.");
+            }
+            
+            Console.WriteLine("Duration accepted.");
+        }
+
+        public static string BuildSchudleReportUsingString(string[] sessionNames, DateTime[] sessionDates, int[] sessionDuration)
+        {
+            string report = "";
+
+            for(int i = 0; i < sessionNames.Length; i++)
+            {
+                report += $"{sessionNames[i]} - {sessionDates[i].ToString("dd/MM/yyyy hh:mm tt")} - {sessionDuration[i]} minutes\n";
+            }
+
+            return report;
+        }
+
+        public static string BuildSchudleReportUsingStringBuilder(string[] sessionNames, DateTime[] sessionDates, int[] sessionDuration)
+        {
+            StringBuilder report = new StringBuilder();
+
+            for (int i = 0; i < sessionNames.Length; i++)
+            {
+                report.Append($"{sessionNames[i]} - {sessionDates[i].ToString("dd/MM/yyyy hh:mm tt")} - {sessionDuration[i]} minutes\n");
+            }
+
+            return report.ToString();
         }
 
         private static int CheckSessionExists(string[] sessionNames, string name)
